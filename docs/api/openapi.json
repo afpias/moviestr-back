@@ -1,0 +1,2463 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Moviestr Backend",
+		"version": "0.1.0",
+		"description": "HTTP-команды, guest cookie, native WebSocket /ws. Frontend подключается отдельным этапом."
+	},
+	"servers": [{ "url": "http://localhost:3000" }],
+	"paths": {
+		"/api/v1/guest-sessions": {
+			"post": {
+				"operationId": "createGuest",
+				"summary": "createGuest",
+				"security": [],
+				"parameters": [],
+				"responses": {
+					"201": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Guest" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Empty" } } }
+				}
+			}
+		},
+		"/api/v1/realtime-tickets": {
+			"post": {
+				"operationId": "createRealtimeTicket",
+				"summary": "createRealtimeTicket",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [],
+				"responses": {
+					"201": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ticket" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/TicketRequest" } } }
+				}
+			}
+		},
+		"/api/v1/collections": {
+			"get": {
+				"operationId": "listCollections",
+				"summary": "listCollections",
+				"security": [],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": {
+							"application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Collection" } } }
+						}
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/api/v1/movies/search": {
+			"get": {
+				"operationId": "searchMovies",
+				"summary": "searchMovies",
+				"security": [],
+				"parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string", "maxLength": 120 } }],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": {
+							"application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/MovieSuggestion" } } }
+						}
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/api/v1/games": {
+			"post": {
+				"operationId": "createGame",
+				"summary": "Создать соло; 202 и стабильные gameId/operationId, затем GET игры",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/PendingGame" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateGame" } } }
+				}
+			}
+		},
+		"/api/v1/games/{gameId}": {
+			"get": {
+				"operationId": "getGame",
+				"summary": "getGame",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [{ "name": "gameId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/GameResponse" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/api/v1/games/{gameId}/guesses": {
+			"post": {
+				"operationId": "guessSolo",
+				"summary": "guessSolo",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "gameId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/GuessResponse" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Guess" } } }
+				}
+			}
+		},
+		"/api/v1/games/{gameId}/skip": {
+			"post": {
+				"operationId": "skipSolo",
+				"summary": "skipSolo",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "gameId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/GameResponse" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Skip" } } }
+				}
+			}
+		},
+		"/api/v1/games/{gameId}/retry-preparation": {
+			"post": {
+				"operationId": "retrySolo",
+				"summary": "retrySolo",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "gameId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"202": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/PendingGame" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Empty" } } }
+				}
+			}
+		},
+		"/api/v1/operations/{operationId}": {
+			"get": {
+				"operationId": "getOperation",
+				"summary": "getOperation",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "operationId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Operation" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/api/v1/rooms": {
+			"get": {
+				"operationId": "listRooms",
+				"summary": "listRooms",
+				"security": [],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": {
+							"application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/LobbySummary" } } }
+						}
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			},
+			"post": {
+				"operationId": "createRoom",
+				"summary": "createRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"201": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateRoomResponse" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateRoom" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}": {
+			"get": {
+				"operationId": "getRoom",
+				"summary": "getRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } }],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomView" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/join": {
+			"post": {
+				"operationId": "joinRoom",
+				"summary": "joinRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/JoinRoom" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/start": {
+			"post": {
+				"operationId": "startRoom",
+				"summary": "startRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Empty" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/guesses": {
+			"post": {
+				"operationId": "guessRoom",
+				"summary": "guessRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomGuess" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/skip": {
+			"post": {
+				"operationId": "skipRoom",
+				"summary": "skipRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSkip" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/leave": {
+			"post": {
+				"operationId": "leaveRoom",
+				"summary": "leaveRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/LeaveResponse" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Empty" } } }
+				}
+			}
+		},
+		"/api/v1/rooms/{roomId}/retry-preparation": {
+			"post": {
+				"operationId": "retryRoom",
+				"summary": "retryRoom",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Empty" } } }
+				}
+			}
+		},
+		"/health/live": {
+			"get": {
+				"operationId": "liveness",
+				"summary": "liveness",
+				"security": [],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Live" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		},
+		"/health/ready": {
+			"get": {
+				"operationId": "readiness",
+				"summary": "readiness",
+				"security": [],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Ready" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": { "guestCookie": { "type": "apiKey", "in": "cookie", "name": "moviestr_guest" } },
+		"schemas": {
+			"Error": {
+				"type": "object",
+				"properties": { "code": { "type": "string" }, "message": { "type": "string" }, "requestId": { "type": "string" } },
+				"required": ["code", "message"],
+				"additionalProperties": false
+			},
+			"Guest": {
+				"type": "object",
+				"properties": {
+					"participantId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"expiresAt": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+				},
+				"required": ["participantId", "expiresAt"],
+				"additionalProperties": false
+			},
+			"GameFrame": {
+				"type": "object",
+				"properties": {
+					"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+					"alt": { "type": "string" },
+					"url": { "type": "string", "format": "uri" }
+				},
+				"required": ["index", "alt", "url"],
+				"additionalProperties": false
+			},
+			"GameResult": {
+				"type": "object",
+				"properties": {
+					"title": { "type": "string" },
+					"originalTitle": { "type": "string" },
+					"posterUrl": { "type": "string", "format": "uri" },
+					"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+				},
+				"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+				"additionalProperties": false
+			},
+			"GameResponse": {
+				"oneOf": [
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "playing" },
+							"currentFrame": {
+								"type": "object",
+								"properties": {
+									"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+									"alt": { "type": "string" },
+									"url": { "type": "string", "format": "uri" }
+								},
+								"required": ["index", "alt", "url"],
+								"additionalProperties": false
+							}
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"currentFrame"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "won" },
+							"result": {
+								"type": "object",
+								"properties": {
+									"title": { "type": "string" },
+									"originalTitle": { "type": "string" },
+									"posterUrl": { "type": "string", "format": "uri" },
+									"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+								},
+								"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+								"additionalProperties": false
+							}
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"result"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "lost" },
+							"result": {
+								"type": "object",
+								"properties": {
+									"title": { "type": "string" },
+									"originalTitle": { "type": "string" },
+									"posterUrl": { "type": "string", "format": "uri" },
+									"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+								},
+								"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+								"additionalProperties": false
+							}
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"result"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "loading" },
+							"operationId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"error": { "type": ["string", "null"] }
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"operationId",
+							"error"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "error" },
+							"operationId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"error": { "type": ["string", "null"] }
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"operationId",
+							"error"
+						],
+						"additionalProperties": false
+					}
+				]
+			},
+			"PendingGame": {
+				"type": "object",
+				"properties": {
+					"gameId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"operationId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"status": { "type": "string", "const": "loading" },
+					"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+					"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+				},
+				"required": ["gameId", "operationId", "status", "version", "serverTime"],
+				"additionalProperties": false
+			},
+			"GuessResponse": {
+				"oneOf": [
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "playing" },
+							"currentFrame": {
+								"type": "object",
+								"properties": {
+									"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+									"alt": { "type": "string" },
+									"url": { "type": "string", "format": "uri" }
+								},
+								"required": ["index", "alt", "url"],
+								"additionalProperties": false
+							},
+							"correct": { "type": "boolean", "const": false }
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"currentFrame",
+							"correct"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "won" },
+							"result": {
+								"type": "object",
+								"properties": {
+									"title": { "type": "string" },
+									"originalTitle": { "type": "string" },
+									"posterUrl": { "type": "string", "format": "uri" },
+									"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+								},
+								"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+								"additionalProperties": false
+							},
+							"correct": { "type": "boolean", "const": true }
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"result",
+							"correct"
+						],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"gameId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"totalFrames": { "type": "number", "const": 5 },
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"status": { "type": "string", "const": "lost" },
+							"result": {
+								"type": "object",
+								"properties": {
+									"title": { "type": "string" },
+									"originalTitle": { "type": "string" },
+									"posterUrl": { "type": "string", "format": "uri" },
+									"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+								},
+								"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+								"additionalProperties": false
+							},
+							"correct": { "type": "boolean", "const": false }
+						},
+						"required": [
+							"gameId",
+							"difficulty",
+							"genre",
+							"totalFrames",
+							"version",
+							"serverTime",
+							"attemptedMovieIds",
+							"status",
+							"result",
+							"correct"
+						],
+						"additionalProperties": false
+					}
+				]
+			},
+			"RoomSnapshot": {
+				"type": "object",
+				"properties": {
+					"view": { "type": "string", "const": "member" },
+					"id": { "type": "string" },
+					"settings": {
+						"type": "object",
+						"properties": {
+							"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+							"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+							"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+							"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"default": "all",
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+							"mode": { "default": "points", "type": "string", "const": "points" }
+						},
+						"required": ["name"],
+						"additionalProperties": false
+					},
+					"hostId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"players": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"id": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								},
+								"nickname": { "type": "string" },
+								"score": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+								"status": { "type": "string", "enum": ["playing", "won", "lost"] },
+								"lastAnswer": { "anyOf": [{ "type": "string", "enum": ["correct", "incorrect"] }, { "type": "null" }] },
+								"connected": { "type": "boolean" },
+								"left": { "type": "boolean" }
+							},
+							"required": ["id", "nickname", "score", "status", "lastAnswer", "connected", "left"],
+							"additionalProperties": false
+						}
+					},
+					"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+					"roundId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"roundNumber": { "type": "integer", "minimum": 0, "maximum": 50 },
+					"deadline": { "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 9007199254740991 }, { "type": "null" }] },
+					"currentFrame": {
+						"anyOf": [
+							{
+								"type": "object",
+								"properties": {
+									"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+									"alt": { "type": "string" },
+									"url": { "type": "string", "format": "uri" }
+								},
+								"required": ["index", "alt", "url"],
+								"additionalProperties": false
+							},
+							{ "type": "null" }
+						]
+					},
+					"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+					"winnerIds": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid",
+							"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+						}
+					},
+					"error": { "type": ["string", "null"] },
+					"result": {
+						"anyOf": [
+							{
+								"type": "object",
+								"properties": {
+									"title": { "type": "string" },
+									"originalTitle": { "type": "string" },
+									"posterUrl": { "type": "string", "format": "uri" },
+									"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+								},
+								"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+								"additionalProperties": false
+							},
+							{ "type": "null" }
+						]
+					},
+					"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+					"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+				},
+				"required": [
+					"view",
+					"id",
+					"settings",
+					"hostId",
+					"players",
+					"status",
+					"roundId",
+					"roundNumber",
+					"deadline",
+					"currentFrame",
+					"attemptedMovieIds",
+					"winnerIds",
+					"error",
+					"result",
+					"version",
+					"serverTime"
+				],
+				"additionalProperties": false
+			},
+			"LobbyPreview": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"settings": {
+						"type": "object",
+						"properties": {
+							"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+							"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+							"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+							"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"default": "all",
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+							"mode": { "default": "points", "type": "string", "const": "points" }
+						},
+						"required": ["name"],
+						"additionalProperties": false
+					},
+					"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+					"hasPassword": { "type": "boolean" },
+					"view": { "type": "string", "const": "preview" },
+					"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] }
+				},
+				"required": ["id", "settings", "playerCount", "hasPassword", "view", "status"],
+				"additionalProperties": false
+			},
+			"LobbySummary": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string" },
+					"settings": {
+						"type": "object",
+						"properties": {
+							"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+							"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+							"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+							"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"default": "all",
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+							"mode": { "default": "points", "type": "string", "const": "points" }
+						},
+						"required": ["name"],
+						"additionalProperties": false
+					},
+					"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+					"hasPassword": { "type": "boolean" }
+				},
+				"required": ["id", "settings", "playerCount", "hasPassword"],
+				"additionalProperties": false
+			},
+			"LobbySettings": {
+				"type": "object",
+				"properties": {
+					"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+					"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+					"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+					"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+					"genre": {
+						"default": "all",
+						"type": "string",
+						"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+					},
+					"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+					"mode": { "default": "points", "type": "string", "const": "points" }
+				},
+				"required": ["name"],
+				"additionalProperties": false
+			},
+			"RoomPlayer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"nickname": { "type": "string" },
+					"score": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+					"status": { "type": "string", "enum": ["playing", "won", "lost"] },
+					"lastAnswer": { "anyOf": [{ "type": "string", "enum": ["correct", "incorrect"] }, { "type": "null" }] },
+					"connected": { "type": "boolean" },
+					"left": { "type": "boolean" }
+				},
+				"required": ["id", "nickname", "score", "status", "lastAnswer", "connected", "left"],
+				"additionalProperties": false
+			},
+			"Collection": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string", "const": "tmdb-catalog" },
+					"title": { "type": "string" },
+					"description": { "type": "string" },
+					"movieCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+				},
+				"required": ["id", "title", "description", "movieCount"],
+				"additionalProperties": false
+			},
+			"MovieSuggestion": {
+				"type": "object",
+				"properties": {
+					"id": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" },
+					"title": { "type": "string" },
+					"englishTitle": { "type": "string" },
+					"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+				},
+				"required": ["id", "title", "englishTitle", "releaseYear"],
+				"additionalProperties": false
+			},
+			"Operation": {
+				"type": "object",
+				"properties": {
+					"operationId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"gameId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"status": { "type": "string", "enum": ["pending", "ready", "error"] },
+					"error": { "type": ["string", "null"] }
+				},
+				"required": ["operationId", "gameId", "status", "error"],
+				"additionalProperties": false
+			},
+			"Ticket": {
+				"type": "object",
+				"properties": {
+					"ticket": { "type": "string" },
+					"expiresAt": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+				},
+				"required": ["ticket", "expiresAt"],
+				"additionalProperties": false
+			},
+			"CreateGame": {
+				"type": "object",
+				"properties": {
+					"collectionId": { "default": "tmdb-catalog", "type": "string", "const": "tmdb-catalog" },
+					"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+					"genre": {
+						"default": "all",
+						"type": "string",
+						"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+					}
+				},
+				"additionalProperties": false
+			},
+			"CreateRoom": {
+				"type": "object",
+				"properties": {
+					"settings": {
+						"type": "object",
+						"properties": {
+							"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+							"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+							"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+							"difficulty": { "default": "easy", "type": "string", "enum": ["easy", "medium", "hard", "expert", "impossible"] },
+							"genre": {
+								"default": "all",
+								"type": "string",
+								"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+							},
+							"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+							"mode": { "default": "points", "type": "string", "const": "points" }
+						},
+						"required": ["name"],
+						"additionalProperties": false
+					},
+					"nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+					"password": { "default": "", "type": "string", "maxLength": 128 }
+				},
+				"required": ["settings", "nickname"],
+				"additionalProperties": false
+			},
+			"JoinRoom": {
+				"type": "object",
+				"properties": {
+					"nickname": { "type": "string", "minLength": 2, "maxLength": 24 },
+					"password": { "default": "", "type": "string", "maxLength": 128 }
+				},
+				"required": ["nickname"],
+				"additionalProperties": false
+			},
+			"Guess": {
+				"type": "object",
+				"properties": {
+					"movieId": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" },
+					"expectedFrameIndex": { "type": "integer", "minimum": 0, "maximum": 4 }
+				},
+				"required": ["movieId", "expectedFrameIndex"],
+				"additionalProperties": false
+			},
+			"Skip": {
+				"type": "object",
+				"properties": { "expectedFrameIndex": { "type": "integer", "minimum": 0, "maximum": 4 } },
+				"required": ["expectedFrameIndex"],
+				"additionalProperties": false
+			},
+			"RoomGuess": {
+				"type": "object",
+				"properties": {
+					"movieId": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" },
+					"expectedFrameIndex": { "type": "integer", "minimum": 0, "maximum": 4 },
+					"roundId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					}
+				},
+				"required": ["movieId", "expectedFrameIndex", "roundId"],
+				"additionalProperties": false
+			},
+			"RoomSkip": {
+				"type": "object",
+				"properties": {
+					"expectedFrameIndex": { "type": "integer", "minimum": 0, "maximum": 4 },
+					"roundId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					}
+				},
+				"required": ["expectedFrameIndex", "roundId"],
+				"additionalProperties": false
+			},
+			"Empty": { "type": "object", "properties": {}, "additionalProperties": false },
+			"TicketRequest": {
+				"type": "object",
+				"properties": { "roomId": { "type": "string", "minLength": 1, "maxLength": 32 } },
+				"additionalProperties": false
+			},
+			"CreateRoomResponse": {
+				"type": "object",
+				"properties": {
+					"roomId": { "type": "string" },
+					"snapshot": {
+						"type": "object",
+						"properties": {
+							"view": { "type": "string", "const": "member" },
+							"id": { "type": "string" },
+							"settings": {
+								"type": "object",
+								"properties": {
+									"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+									"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+									"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+									"difficulty": {
+										"default": "easy",
+										"type": "string",
+										"enum": ["easy", "medium", "hard", "expert", "impossible"]
+									},
+									"genre": {
+										"default": "all",
+										"type": "string",
+										"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+									},
+									"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+									"mode": { "default": "points", "type": "string", "const": "points" }
+								},
+								"required": ["name"],
+								"additionalProperties": false
+							},
+							"hostId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"players": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"id": {
+											"type": "string",
+											"format": "uuid",
+											"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+										},
+										"nickname": { "type": "string" },
+										"score": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+										"status": { "type": "string", "enum": ["playing", "won", "lost"] },
+										"lastAnswer": { "anyOf": [{ "type": "string", "enum": ["correct", "incorrect"] }, { "type": "null" }] },
+										"connected": { "type": "boolean" },
+										"left": { "type": "boolean" }
+									},
+									"required": ["id", "nickname", "score", "status", "lastAnswer", "connected", "left"],
+									"additionalProperties": false
+								}
+							},
+							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+							"roundId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"roundNumber": { "type": "integer", "minimum": 0, "maximum": 50 },
+							"deadline": { "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 9007199254740991 }, { "type": "null" }] },
+							"currentFrame": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+											"alt": { "type": "string" },
+											"url": { "type": "string", "format": "uri" }
+										},
+										"required": ["index", "alt", "url"],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"winnerIds": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								}
+							},
+							"error": { "type": ["string", "null"] },
+							"result": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"title": { "type": "string" },
+											"originalTitle": { "type": "string" },
+											"posterUrl": { "type": "string", "format": "uri" },
+											"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+										},
+										"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+						},
+						"required": [
+							"view",
+							"id",
+							"settings",
+							"hostId",
+							"players",
+							"status",
+							"roundId",
+							"roundNumber",
+							"deadline",
+							"currentFrame",
+							"attemptedMovieIds",
+							"winnerIds",
+							"error",
+							"result",
+							"version",
+							"serverTime"
+						],
+						"additionalProperties": false
+					}
+				},
+				"required": ["roomId", "snapshot"],
+				"additionalProperties": false
+			},
+			"LeaveResponse": {
+				"type": "object",
+				"properties": { "left": { "type": "boolean", "const": true } },
+				"required": ["left"],
+				"additionalProperties": false
+			},
+			"RoomView": {
+				"oneOf": [
+					{
+						"type": "object",
+						"properties": {
+							"id": { "type": "string" },
+							"settings": {
+								"type": "object",
+								"properties": {
+									"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+									"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+									"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+									"difficulty": {
+										"default": "easy",
+										"type": "string",
+										"enum": ["easy", "medium", "hard", "expert", "impossible"]
+									},
+									"genre": {
+										"default": "all",
+										"type": "string",
+										"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+									},
+									"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+									"mode": { "default": "points", "type": "string", "const": "points" }
+								},
+								"required": ["name"],
+								"additionalProperties": false
+							},
+							"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+							"hasPassword": { "type": "boolean" },
+							"view": { "type": "string", "const": "preview" },
+							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] }
+						},
+						"required": ["id", "settings", "playerCount", "hasPassword", "view", "status"],
+						"additionalProperties": false
+					},
+					{
+						"type": "object",
+						"properties": {
+							"view": { "type": "string", "const": "member" },
+							"id": { "type": "string" },
+							"settings": {
+								"type": "object",
+								"properties": {
+									"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+									"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+									"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+									"difficulty": {
+										"default": "easy",
+										"type": "string",
+										"enum": ["easy", "medium", "hard", "expert", "impossible"]
+									},
+									"genre": {
+										"default": "all",
+										"type": "string",
+										"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+									},
+									"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+									"mode": { "default": "points", "type": "string", "const": "points" }
+								},
+								"required": ["name"],
+								"additionalProperties": false
+							},
+							"hostId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"players": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"id": {
+											"type": "string",
+											"format": "uuid",
+											"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+										},
+										"nickname": { "type": "string" },
+										"score": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+										"status": { "type": "string", "enum": ["playing", "won", "lost"] },
+										"lastAnswer": { "anyOf": [{ "type": "string", "enum": ["correct", "incorrect"] }, { "type": "null" }] },
+										"connected": { "type": "boolean" },
+										"left": { "type": "boolean" }
+									},
+									"required": ["id", "nickname", "score", "status", "lastAnswer", "connected", "left"],
+									"additionalProperties": false
+								}
+							},
+							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+							"roundId": {
+								"type": "string",
+								"format": "uuid",
+								"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+							},
+							"roundNumber": { "type": "integer", "minimum": 0, "maximum": 50 },
+							"deadline": { "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 9007199254740991 }, { "type": "null" }] },
+							"currentFrame": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+											"alt": { "type": "string" },
+											"url": { "type": "string", "format": "uri" }
+										},
+										"required": ["index", "alt", "url"],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
+							"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+							"winnerIds": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								}
+							},
+							"error": { "type": ["string", "null"] },
+							"result": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"title": { "type": "string" },
+											"originalTitle": { "type": "string" },
+											"posterUrl": { "type": "string", "format": "uri" },
+											"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+										},
+										"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
+							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+						},
+						"required": [
+							"view",
+							"id",
+							"settings",
+							"hostId",
+							"players",
+							"status",
+							"roundId",
+							"roundNumber",
+							"deadline",
+							"currentFrame",
+							"attemptedMovieIds",
+							"winnerIds",
+							"error",
+							"result",
+							"version",
+							"serverTime"
+						],
+						"additionalProperties": false
+					}
+				],
+				"discriminator": { "propertyName": "view" }
+			},
+			"Live": {
+				"type": "object",
+				"properties": { "status": { "type": "string", "const": "ok" } },
+				"required": ["status"],
+				"additionalProperties": false
+			},
+			"Ready": {
+				"type": "object",
+				"properties": { "status": { "type": "string", "const": "ready" }, "tmdbConfigured": { "type": "boolean" } },
+				"required": ["status", "tmdbConfigured"],
+				"additionalProperties": false
+			}
+		}
+	}
+}

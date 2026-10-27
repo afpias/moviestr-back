@@ -1,0 +1,53 @@
+{
+	"name": "moviestr-back",
+	"version": "0.1.0",
+	"private": true,
+	"packageManager": "yarn@1.22.22",
+	"engines": {
+		"node": ">=24 <25"
+	},
+	"scripts": {
+		"dev": "ts-node --files src/main.ts",
+		"build": "tsc -p tsconfig.build.json",
+		"start": "node dist/main.js",
+		"migrate": "ts-node src/database/migrate.ts",
+		"test": "vitest run",
+		"test:unit": "vitest run test/rules.spec.ts test/catalog.spec.ts test/ocr.spec.ts test/contracts.spec.ts",
+		"test:integration": "vitest run test/integration.spec.ts test/recovery.spec.ts test/realtime.spec.ts test/process-restart.spec.ts test/match.spec.ts test/review-regressions.spec.ts test/catalog-integration.spec.ts",
+		"type-check": "tsc --noEmit",
+		"lint": "eslint src test",
+		"format": "prettier --write src test package.json tsconfig*.json *.js *.mts compose.yaml README.md docs/api",
+		"format:check": "prettier --check src test package.json tsconfig*.json *.js *.mts compose.yaml README.md docs/api",
+		"validate": "yarn type-check && yarn lint && yarn test && yarn format:check",
+		"openapi": "ts-node src/contracts/export.ts"
+	},
+	"dependencies": {
+		"@nestjs/common": "^11.1.0",
+		"@nestjs/core": "^11.1.0",
+		"@nestjs/platform-express": "^11.1.0",
+		"cookie-parser": "^1.4.7",
+		"pg": "^8.16.0",
+		"reflect-metadata": "^0.2.2",
+		"rxjs": "^7.8.2",
+		"tesseract.js": "^7.0.0",
+		"ws": "^8.18.0",
+		"zod": "^4.1.0"
+	},
+	"devDependencies": {
+		"@afpia/prettier": "^1.2.0",
+		"@eslint/js": "^9.39.0",
+		"@nestjs/testing": "^11.1.0",
+		"@types/cookie-parser": "^1.4.9",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.0.0",
+		"@types/pg": "^8.15.0",
+		"@types/supertest": "^6.0.3",
+		"eslint": "^9.39.0",
+		"prettier": "^3.6.0",
+		"supertest": "^7.1.0",
+		"typescript": "~5.9.3",
+		"typescript-eslint": "^8.46.0",
+		"vitest": "^4.0.0",
+		"ts-node": "10.9.2"
+	}
+}

@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: moviestr
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-moviestr_local}
+      POSTGRES_DB: moviestr
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U moviestr -d moviestr']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://moviestr:${POSTGRES_PASSWORD:-moviestr_local}@db:5432/moviestr
+      TMDB_READ_TOKEN: ${TMDB_READ_TOKEN:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  pgdata:

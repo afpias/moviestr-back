@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.cache/
+coverage/
+*.log
+*.dump
+.superpowers/
+postgres-data/

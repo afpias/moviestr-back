@@ -1,0 +1,294 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Moviestr native WebSocket protocol",
+	"oneOf": [
+		{
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "session.auth" },
+						"data": {
+							"type": "object",
+							"properties": { "ticket": { "type": "string", "minLength": 20, "maxLength": 128 } },
+							"required": ["ticket"],
+							"additionalProperties": false
+						},
+						"requestId": { "type": "string", "maxLength": 128 }
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "lobbies.subscribe" },
+						"data": { "type": "object", "properties": {}, "additionalProperties": false },
+						"requestId": { "type": "string", "maxLength": 128 }
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "lobbies.unsubscribe" },
+						"data": { "type": "object", "properties": {}, "additionalProperties": false },
+						"requestId": { "type": "string", "maxLength": 128 }
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "room.unsubscribe" },
+						"data": { "type": "object", "properties": {}, "additionalProperties": false },
+						"requestId": { "type": "string", "maxLength": 128 }
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "room.subscribe" },
+						"data": {
+							"type": "object",
+							"properties": { "roomId": { "type": "string", "minLength": 1, "maxLength": 32 } },
+							"required": ["roomId"],
+							"additionalProperties": false
+						},
+						"requestId": { "type": "string", "maxLength": 128 }
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				}
+			]
+		},
+		{
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "session.ready" },
+						"data": {
+							"type": "object",
+							"properties": {
+								"participantId": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								},
+								"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+							},
+							"required": ["participantId", "serverTime"],
+							"additionalProperties": false
+						}
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "session.error" },
+						"data": {
+							"type": "object",
+							"properties": { "code": { "type": "string" }, "message": { "type": "string" }, "requestId": { "type": "string" } },
+							"required": ["code", "message"],
+							"additionalProperties": false
+						}
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "room.snapshot" },
+						"data": {
+							"type": "object",
+							"properties": {
+								"view": { "type": "string", "const": "member" },
+								"id": { "type": "string" },
+								"settings": {
+									"type": "object",
+									"properties": {
+										"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+										"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+										"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+										"difficulty": {
+											"default": "easy",
+											"type": "string",
+											"enum": ["easy", "medium", "hard", "expert", "impossible"]
+										},
+										"genre": {
+											"default": "all",
+											"type": "string",
+											"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+										},
+										"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+										"mode": { "default": "points", "type": "string", "const": "points" }
+									},
+									"required": ["name"],
+									"additionalProperties": false
+								},
+								"hostId": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								},
+								"players": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string",
+												"format": "uuid",
+												"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+											},
+											"nickname": { "type": "string" },
+											"score": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+											"status": { "type": "string", "enum": ["playing", "won", "lost"] },
+											"lastAnswer": { "anyOf": [{ "type": "string", "enum": ["correct", "incorrect"] }, { "type": "null" }] },
+											"connected": { "type": "boolean" },
+											"left": { "type": "boolean" }
+										},
+										"required": ["id", "nickname", "score", "status", "lastAnswer", "connected", "left"],
+										"additionalProperties": false
+									}
+								},
+								"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+								"roundId": {
+									"type": "string",
+									"format": "uuid",
+									"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+								},
+								"roundNumber": { "type": "integer", "minimum": 0, "maximum": 50 },
+								"deadline": { "anyOf": [{ "type": "integer", "minimum": 0, "maximum": 9007199254740991 }, { "type": "null" }] },
+								"currentFrame": {
+									"anyOf": [
+										{
+											"type": "object",
+											"properties": {
+												"index": { "type": "integer", "minimum": 0, "maximum": 4 },
+												"alt": { "type": "string" },
+												"url": { "type": "string", "format": "uri" }
+											},
+											"required": ["index", "alt", "url"],
+											"additionalProperties": false
+										},
+										{ "type": "null" }
+									]
+								},
+								"attemptedMovieIds": { "type": "array", "items": { "type": "string", "pattern": "^tmdb-[1-9]\\d{0,9}$" } },
+								"winnerIds": {
+									"type": "array",
+									"items": {
+										"type": "string",
+										"format": "uuid",
+										"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+									}
+								},
+								"error": { "type": ["string", "null"] },
+								"result": {
+									"anyOf": [
+										{
+											"type": "object",
+											"properties": {
+												"title": { "type": "string" },
+												"originalTitle": { "type": "string" },
+												"posterUrl": { "type": "string", "format": "uri" },
+												"releaseYear": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+											},
+											"required": ["title", "originalTitle", "posterUrl", "releaseYear"],
+											"additionalProperties": false
+										},
+										{ "type": "null" }
+									]
+								},
+								"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
+								"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+							},
+							"required": [
+								"view",
+								"id",
+								"settings",
+								"hostId",
+								"players",
+								"status",
+								"roundId",
+								"roundNumber",
+								"deadline",
+								"currentFrame",
+								"attemptedMovieIds",
+								"winnerIds",
+								"error",
+								"result",
+								"version",
+								"serverTime"
+							],
+							"additionalProperties": false
+						}
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				},
+				{
+					"type": "object",
+					"properties": {
+						"event": { "type": "string", "const": "lobbies.snapshot" },
+						"data": {
+							"type": "object",
+							"properties": {
+								"revision": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+								"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+								"rooms": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": { "type": "string" },
+											"settings": {
+												"type": "object",
+												"properties": {
+													"name": { "type": "string", "minLength": 2, "maxLength": 60 },
+													"capacity": { "default": 4, "type": "integer", "minimum": 2, "maximum": 4 },
+													"filmCount": { "default": 20, "type": "integer", "minimum": 1, "maximum": 50 },
+													"difficulty": {
+														"default": "easy",
+														"type": "string",
+														"enum": ["easy", "medium", "hard", "expert", "impossible"]
+													},
+													"genre": {
+														"default": "all",
+														"type": "string",
+														"enum": ["all", "action", "comedy", "drama", "thriller", "horror", "science-fiction", "animation"]
+													},
+													"visibility": { "default": "public", "type": "string", "enum": ["public", "private"] },
+													"mode": { "default": "points", "type": "string", "const": "points" }
+												},
+												"required": ["name"],
+												"additionalProperties": false
+											},
+											"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+											"hasPassword": { "type": "boolean" }
+										},
+										"required": ["id", "settings", "playerCount", "hasPassword"],
+										"additionalProperties": false
+									}
+								}
+							},
+							"required": ["revision", "serverTime", "rooms"],
+							"additionalProperties": false
+						}
+					},
+					"required": ["event", "data"],
+					"additionalProperties": false
+				}
+			]
+		}
+	]
+}

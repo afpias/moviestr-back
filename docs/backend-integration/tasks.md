@@ -39,3 +39,11 @@
 - [ ] Полный матч 2–4 независимых браузеров и двух устройств; server restart и TMDB outage.
 - [ ] Frontend yarn validate/build, desktop/360 px E2E, отсутствие answer/token в Network/storage/dist.
 - [ ] Staging, затем отдельно согласованный production cutover; обновить документацию по факту.
+
+
+## Дополнение 2026-10-28: общий результат и ready
+
+- [x] RED current immediate advance, согласованный persisted round-result / ready contract; см. [spec](../round-results/spec.md).
+- [x] Domain, HTTP/WS schemas/OpenAPI, новая migration и совместимость старого JSON; real PostgreSQL race/restart tests.
+- [x] Финальный validate/build и отчёт новой фазы: 13 файлов / 69 тестов на реальном PostgreSQL.
+- [x] После отдельного frontend freeze — Docker stack healthy и live round-result/all-ready smoke (11 групп), secret scan PASS.

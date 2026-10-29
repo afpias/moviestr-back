@@ -36,6 +36,19 @@ export function roomSnapshot(r: Room, id: string, now: number) {
 		attemptedMovieIds: me ? [...me.attemptedMovieIds] : [],
 		winnerIds: r.status === 'finished' ? r.players.filter((p) => p.score === max).map((p) => p.id) : [],
 		error: r.error,
-		result: r.status === 'finished' ? (r.movie?.result ?? null) : null
+		result: r.status === 'finished' || r.status === 'round-result' ? (r.movie?.result ?? null) : null,
+		roundResult:
+			r.status === 'round-result' && me
+				? {
+						roundId: r.roundId,
+						roundNumber: r.roundNumber,
+						outcome: me.status === 'won' ? ('won' as const) : ('lost' as const),
+						readyPlayerIds: [...r.roundReadyPlayerIds],
+						requiredPlayerIds: [...r.roundRequiredPlayerIds],
+						isReady: r.roundReadyPlayerIds.includes(id),
+						canContinue: r.roundRequiredPlayerIds.includes(id) && !r.roundReadyPlayerIds.includes(id),
+						isLastRound: r.roundNumber >= r.settings.filmCount
+					}
+				: null
 	}
 }

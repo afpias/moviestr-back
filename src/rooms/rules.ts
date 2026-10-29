@@ -29,6 +29,8 @@ export function newRoom(
 		status: 'waiting',
 		roundId: randomUUID(),
 		roundNumber: 0,
+		roundReadyPlayerIds: [],
+		roundRequiredPlayerIds: [],
 		deadline: null,
 		movie: null,
 		usedMovieIds: [],
@@ -71,6 +73,8 @@ export function join(r: Room, id: string, nickname: string, now: number) {
 }
 function preparing(r: Room) {
 	r.status = 'loading'
+	r.roundReadyPlayerIds = []
+	r.roundRequiredPlayerIds = []
 	r.deadline = null
 	r.movie = null
 	r.roundId = randomUUID()
@@ -105,15 +109,33 @@ export function publish(r: Room, movie: PreparedMovie, now: number) {
 	r.leaseUntil = null
 	r.error = null
 }
-function advance(r: Room) {
+function reveal(r: Room, now: number) {
 	if (r.status !== 'playing' || r.players.some((p) => !p.left && p.status === 'playing')) return
-	if (r.roundNumber >= r.settings.filmCount) {
-		r.status = 'finished'
-		r.deadline = null
-	} else {
+	r.status = 'round-result'
+	r.deadline = null
+	r.roundReadyPlayerIds = []
+	r.roundRequiredPlayerIds = r.players.filter((p) => !p.left && (p.connected || now - p.lastSeen < GRACE_MS)).map((p) => p.id)
+}
+function continueWhenReady(r: Room, now: number) {
+	if (r.status !== 'round-result') return
+	r.roundRequiredPlayerIds = r.roundRequiredPlayerIds.filter((id) =>
+		r.players.some((p) => p.id === id && !p.left && (p.connected || now - p.lastSeen < GRACE_MS))
+	)
+	r.roundReadyPlayerIds = r.roundReadyPlayerIds.filter((id) => r.roundRequiredPlayerIds.includes(id))
+	if (!r.roundRequiredPlayerIds.every((id) => r.roundReadyPlayerIds.includes(id))) return
+	if (r.roundNumber >= r.settings.filmCount) r.status = 'finished'
+	else {
 		r.roundNumber++
 		preparing(r)
 	}
+}
+export function ready(r: Room, id: string, roundId: string, now: number) {
+	const p = player(r, id)
+	check(r.roundId === roundId, 409, 'STALE_ROUND')
+	check(r.status === 'round-result', 409, 'ROUND_NOT_IN_RESULT')
+	check(r.roundRequiredPlayerIds.includes(id) && (p.connected || now - p.lastSeen < GRACE_MS), 403, 'READY_NOT_REQUIRED')
+	if (!r.roundReadyPlayerIds.includes(id)) r.roundReadyPlayerIds.push(id)
+	continueWhenReady(r, now)
 }
 export function tick(r: Room, now: number) {
 	if (r.status === 'closed' || r.status === 'finished') return
@@ -135,8 +157,9 @@ export function tick(r: Room, now: number) {
 				p.status = 'lost'
 				p.lastAnswer = 'incorrect'
 			}
-		advance(r)
+		reveal(r, now)
 	}
+	if (r.status === 'round-result') continueWhenReady(r, now)
 }
 function active(r: Room, id: string, roundId: string, frame: number, now: number): Player {
 	const p = player(r, id)
@@ -164,7 +187,7 @@ export function guess(r: Room, id: string, roundId: string, movieId: string, fra
 		if (p.frameIndex === 4) p.status = 'lost'
 		else p.frameIndex++
 	}
-	advance(r)
+	reveal(r, now)
 }
 export function skip(r: Room, id: string, roundId: string, frame: number, now: number) {
 	const p = active(r, id, roundId, frame, now)
@@ -173,7 +196,7 @@ export function skip(r: Room, id: string, roundId: string, frame: number, now: n
 		p.score -= 50
 		p.lastAnswer = 'incorrect'
 	} else p.frameIndex++
-	advance(r)
+	reveal(r, now)
 }
 export function leave(r: Room, id: string, now: number) {
 	const p = player(r, id)
@@ -189,6 +212,6 @@ export function leave(r: Room, id: string, now: number) {
 		const next = r.players.find((p) => !p.left && p.connected)
 		if (next) r.hostId = next.id
 	}
-	advance(r)
+	reveal(r, now)
 	tick(r, now)
 }

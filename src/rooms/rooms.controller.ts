@@ -2,7 +2,15 @@ import { Body, Controller, Get, Headers, Inject, Param, Post, Req, Res } from '@
 import type { Response } from 'express'
 import { RoomsService } from './rooms.service'
 import { guest, type GuestRequest } from '../sessions/sessions'
-import { createRoomSchema, joinSchema, roomGuessSchema, roomSkipSchema, emptySchema, parse } from '../common/schemas'
+import {
+	createRoomSchema,
+	joinSchema,
+	roomGuessSchema,
+	roomSkipSchema,
+	roomReadySchema,
+	emptySchema,
+	parse
+} from '../common/schemas'
 import { reply } from '../common/http'
 @Controller('api/v1/rooms')
 export class RoomsController {
@@ -43,6 +51,7 @@ export class RoomsController {
 		const owner = guest(req)
 		if (action === 'guesses') return reply(res, await this.rooms.action(owner.id, id, key, action, parse(roomGuessSchema, body)))
 		if (action === 'skip') return reply(res, await this.rooms.action(owner.id, id, key, action, parse(roomSkipSchema, body)))
+		if (action === 'ready') return reply(res, await this.rooms.action(owner.id, id, key, action, parse(roomReadySchema, body)))
 		if (action === 'start' || action === 'leave' || action === 'retry-preparation') {
 			parse(emptySchema, body)
 			return reply(res, await this.rooms.action(owner.id, id, key, action, {}))

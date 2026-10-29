@@ -7,7 +7,7 @@ import { Clock } from '../common/clock'
 import { passwordHash, passwordMatches } from '../common/security'
 import { AppError, requireCondition as check } from '../common/errors'
 import type { Room, Settings } from '../common/model'
-import { newRoom, join, start, guess, skip, leave, host, tick, GRACE_MS } from './rules'
+import { newRoom, join, start, guess, skip, leave, ready, host, tick, GRACE_MS } from './rules'
 import { lobbySummary, roomSnapshot } from './projections'
 @Injectable()
 export class RoomsService {
@@ -79,7 +79,7 @@ export class RoomsService {
 		owner: string,
 		id: string,
 		key: unknown,
-		kind: 'start' | 'guesses' | 'skip' | 'leave' | 'retry-preparation',
+		kind: 'start' | 'guesses' | 'skip' | 'leave' | 'ready' | 'retry-preparation',
 		input: { roundId?: string; movieId?: string; expectedFrameIndex?: number }
 	) {
 		return this.mutate(owner, id, kind, key, input, async (r, c) => {
@@ -87,6 +87,7 @@ export class RoomsService {
 			if (kind === 'start') start(r, owner, now)
 			else if (kind === 'guesses') guess(r, owner, input.roundId!, input.movieId!, input.expectedFrameIndex!, now)
 			else if (kind === 'skip') skip(r, owner, input.roundId!, input.expectedFrameIndex!, now)
+			else if (kind === 'ready') ready(r, owner, input.roundId!, now)
 			else if (kind === 'leave') leave(r, owner, now)
 			else {
 				host(r, owner)
@@ -122,6 +123,7 @@ export class RoomsService {
 						403,
 						'FORBIDDEN'
 					)
+				const before = kind === 'ready' ? JSON.stringify(r) : undefined
 				let deadlineError: AppError | undefined
 				try {
 					await work(r, c)
@@ -131,6 +133,8 @@ export class RoomsService {
 						if (r.status === 'loading') await this.enqueue(c, r)
 					} else throw e
 				}
+				if (kind === 'ready' && before === JSON.stringify(r))
+					return { status: 200, body: roomSnapshot(r, owner, this.clock.now()) }
 				r.version++
 				r.updatedAt = this.clock.now()
 				await this.repo.saveRoom(c, r)
@@ -161,11 +165,16 @@ export class RoomsService {
 			const r = await this.repo.room(c, id)
 			const p = r.players.find((p) => p.id === owner && !p.left)
 			check(p, 403, 'FORBIDDEN')
-			if (r.status === 'closed') return
-			const connected = typeof value === 'function' ? value() : value
-			const changed = p.connected !== connected
+			const isClosed = () => r.status === 'closed'
+			if (isClosed()) return
+			const before = JSON.stringify(r)
+			if (r.status === 'round-result') tick(r, this.clock.now())
+			const reconciled = before !== JSON.stringify(r)
+			if (r.status === 'loading') await this.enqueue(c, r)
+			const connected = r.status !== 'closed' && (typeof value === 'function' ? value() : value)
+			const changed = reconciled || p.connected !== connected
 			p.connected = connected
-			p.lastSeen = connected ? this.clock.now() : (disconnectedAt ?? this.clock.now())
+			if (r.status !== 'closed') p.lastSeen = connected ? this.clock.now() : (disconnectedAt ?? this.clock.now())
 			if (changed) {
 				r.version++
 				r.updatedAt = this.clock.now()

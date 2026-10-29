@@ -133,7 +133,14 @@ describe('PostgreSQL concurrency and recovery', () => {
 		blocker.release()
 		expect((await pending).status).toBe(409)
 		const final = (await a.agent.get(`/api/v1/rooms/${id}`)).body
-		expect(final.status).toBe('finished')
+		expect(final.status).toBe('round-result')
+		for (const p of [a, b])
+			await p.agent
+				.post(`/api/v1/rooms/${id}/ready`)
+				.set('Idempotency-Key', randomUUID())
+				.send({ roundId: state.roundId })
+				.expect(200)
+		expect((await a.agent.get(`/api/v1/rooms/${id}`)).body.status).toBe('finished')
 		expect(final.players.map((p: { score: number }) => p.score)).toEqual([950, 950])
 		expect(
 			(await db.query('SELECT count(*)::int AS n FROM event_outbox WHERE aggregate_id=$1 AND NOT delivered', [id])).rows[0]?.n

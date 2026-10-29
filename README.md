@@ -1,39 +1,101 @@
 # Moviestr backend
 
 NestJS 11, strict TypeScript, PostgreSQL 17 через `pg` и SQL. HTTP-команды, native WebSocket, гостевые cookie,
-TMDB/каталог, соло и мультиплеер. Vue-фронтенд пока не подключён и не изменён.
+TMDB/каталог, соло и мультиплеер. Vue-клиент собирается из соседнего frontend-репозитория и обслуживается nginx.
 
-## Локальный запуск
+## Запуск всего приложения в Docker
 
-Нужны Node.js 24, Yarn Classic 1.22 и запущенный Docker Desktop с Linux containers.
+Нужен запущенный Docker Desktop с Linux containers. Оба репозитория лежат рядом:
+
+```text
+C:/Users/nikip/Documents/Projects/moviestr/
+  moviestr-back/
+  moviestr-front/
+```
+
+Текущий рабочий каталог backend: `C:/Users/nikip/Documents/Projects/moviestr/moviestr-back`.
+Frontend находится в `../moviestr-front`. Из корня `moviestr` подготовьте backend env, не перезаписывая существующий:
 
 ```powershell
-Copy-Item .env.example .env
+if (-not (Test-Path moviestr-back/.env)) { Copy-Item moviestr-back/.env.example moviestr-back/.env }
+# Добавьте TMDB API Read Access Token в moviestr-back/.env: TMDB_READ_TOKEN=...
+docker compose -f moviestr-back/compose.yaml up --build -d --wait
+```
+
+Адрес приложения: `http://localhost:8080`. Nginx проксирует `/api/v1` и `/ws` на `api:3000`, включая WebSocket Upgrade.
+Debug API: `http://localhost:3000/api/v1`; PostgreSQL: `localhost:5433` с текущим `.env.example` (`POSTGRES_PORT`, fallback без настройки — 55432). Все опубликованные порты привязаны к 127.0.0.1.
+Перед стартом освободите 3000 от своего host backend; не завершайте неизвестный процесс.
+
+Compose ждёт healthy PostgreSQL, затем API readiness с БД и token configuration, затем запускает frontend.
+Пустой `TMDB_READ_TOKEN` оставляет API unhealthy; проверьте `.env` и `/health/ready`.
+Readiness подтверждает наличие token, а действительность доступа к TMDB проверяется поиском/подготовкой игры.
+Миграции выполняются API автоматически с advisory lock. PostgreSQL использует прежний named volume `pgdata`.
+
+```powershell
+docker compose -f moviestr-back/compose.yaml ps
+Invoke-RestMethod http://localhost:3000/health/live
+Invoke-RestMethod http://localhost:3000/health/ready
+# Остановка сохраняет volume:
+docker compose -f moviestr-back/compose.yaml stop
+```
+
+Это локальный HTTP Compose: `NODE_ENV=development` задан явно, хотя API и Vue собираются как production assets.
+Так HttpOnly/SameSite cookie работает на HTTP `8080`; production требует HTTPS и Secure cookie, согласуется отдельно.
+`DOCKER_ALLOWED_ORIGINS` по умолчанию включает `http://localhost:8080`, `http://127.0.0.1:8080`, `http://localhost:5173`, `http://127.0.0.1:5173`.
+Прежний `ALLOWED_ORIGINS` из `.env` относится к host dev и не перекрывает Docker origins.
+
+Секрет TMDB передаётся только runtime API, не frontend и не build args. `.env`, зависимости, cache и Git исключены
+из backend build context. `moviestr_local` — открытое локальное значение; для внешнего сервера его заменяют.
+Не использовать `down -v`, `volume rm` или prune для обычного restart.
+
+### Proxy в локальной Windows среде
+
+Если выход к TMDB/npm требует существующего Windows proxy, добавьте в ignored `moviestr-back/.env` только локальные
+proxy endpoints, например для уже настроенного HTTP proxy на Windows port 10808:
+
+```dotenv
+DOCKER_HTTP_PROXY=http://host.docker.internal:10808
+DOCKER_HTTPS_PROXY=http://host.docker.internal:10808
+DOCKER_BUILD_HTTP_PROXY=http://host.docker.internal:10808
+DOCKER_BUILD_HTTPS_PROXY=http://host.docker.internal:10808
+```
+
+Без proxy оставьте значения пустыми. Контейнерный localhost относится к контейнеру, поэтому Windows proxy доступен
+через `host.docker.internal`. API включает `NODE_USE_ENV_PROXY=1`; `NO_PROXY` содержит localhost, db, api, frontend.
+Те же DOCKER_* переменные можно задать только в текущем PowerShell процессе, не меняя `.env` или системные настройки.
+Не помещайте proxy credentials в build args. TLS verification остаётся включённой.
+
+Build proxy относится к RUN-командам сборки, а загрузка base images выполняется Docker Engine отдельно.
+Для неё также нужен рабочий registry access. Если Engine не может скачать официальный image, исправьте его сетевой
+доступ без отключения TLS; детали обхода локального сбоя и фактической проверки записаны в `docs/docker-runtime`.
+
+Подробности: [design](docs/docker-runtime/spec.md), [plan/tasks](docs/docker-runtime/plan.md),
+[результаты Docker-проверки](docs/docker-runtime/verification.md).
+
+### Host-порт PostgreSQL и Windows reservations
+
+Host port задаётся `POSTGRES_PORT` в backend `.env`; Compose fallback — 55432. Текущий пример использует 5433,
+поскольку 29 октября Windows зарезервировала диапазон 55418–55517. Внутри Docker всегда используется `db:5432`.
+При смене host port обновите POSTGRES_PORT, порт DATABASE_URL и TEST_DATABASE_URL в ignored backend `.env`,
+затем пересоздайте только db через `docker compose up -d db`. Существующий volume сохраняется.
+Тестовый helper читает `.env` и по-прежнему требует имя БД с суффиксом `_test`.
+Проверить резервирование Windows можно `netsh interface ipv4 show excludedportrange protocol=tcp`.
+Системные exclusions, WinNAT/HNS и Docker data для смены локального порта не сбрасываются.
+
+## Разработка на хосте
+
+Нужны Node.js 24 и Yarn Classic 1.22. Команды выполняются из backend-каталога при остановленном контейнере api:
+
+```powershell
 yarn install --frozen-lockfile
 docker compose up -d db
 yarn migrate
 yarn dev
 ```
 
-В локальный `.env` самостоятельно добавьте TMDB API Read Access Token в `TMDB_READ_TOKEN`.
-`.env` исключён из Git и Docker build context. `moviestr_local` — открытое локальное значение для Compose,
-его следует заменить для любого внешнего сервера. Другие секреты в примере отсутствуют.
-
-API: `http://localhost:3000/api/v1`. WebSocket: `ws://localhost:3000/ws`.
 `yarn dev` загружает `.env`; watch-режим не включён, после правок перезапустите процесс.
-При запуске миграции применяются автоматически с advisory lock; `yarn migrate` позволяет проверить их отдельно.
-Сервер не создаёт runtime mock-каталог при отсутствии токена: TMDB-запросы возвращают 503.
-
-Полностью в контейнерах:
-
-```powershell
-docker compose up --build -d
-docker compose logs -f api
-```
-
-Dockerfile собирает TypeScript, устанавливает только production dependencies в runtime image и запускает процесс
-от пользователя `node`. PostgreSQL хранится в volume `pgdata`. Для сборки image нужны доступ к registry npm и
-образу `node:24-alpine`. Переменные Compose читаются из `.env`.
+Без TMDB token сервер не подставляет mock-каталог. Host API использует `ALLOWED_ORIGINS`.
+Для host runtime с Windows proxy нужны process-only HTTP_PROXY/HTTPS_PROXY, NODE_USE_ENV_PROXY=1 и NO_PROXY localhost.
 
 ## Проверки
 
@@ -49,7 +111,8 @@ yarn build
 
 Если база уже существует, повторять `createdb` не нужно. Все integration tests используют настоящий PostgreSQL;
 TMDB и часы подменяются только в тестах. Тесты очищают свои таблицы: `TEST_DATABASE_URL` обязан указывать на базу
-с именем, заканчивающимся на `_test`. По умолчанию это `localhost:55432/moviestr_test`.
+с именем, заканчивающимся на `_test`. В `.env.example` это `localhost:5433/moviestr_test`; TEST_DATABASE_URL должен соответствовать POSTGRES_PORT.
+Без TEST_DATABASE_URL тестовый helper сохраняет исходный fallback `localhost:55432/moviestr_test`.
 Произвольный `DATABASE_URL` не используется тестами вместо тестового подключения.
 
 `yarn test` запускает все тесты, включая recovery, WS, контракты и OCR. `yarn validate` выполняет type-check,
@@ -65,7 +128,8 @@ SQL-миграции находятся в `src/database/migrations`; приме
 - TypeScript DTO: `src/contracts/dto.ts`; runtime schemas: `src/contracts/contracts.ts`.
 - [Проектирование](docs/superpowers/specs/2026-10-27-moviestr-backend-design.md),
   [план реализации](docs/superpowers/plans/2026-10-27-moviestr-backend.md),
-  [результаты проверки](docs/backend-integration/verification.md).
+  [первичная проверка](docs/backend-integration/verification.md),
+  [проверка после переноса 28 октября](docs/backend-integration/verification-2026-10-28.md).
 
 Минимальная последовательность HTTP: `POST /guest-sessions {}` → сохранить cookie →
 `POST /games` с `Idempotency-Key` → получить 202 с `gameId`/`operationId` → `GET /games/:id` до playing/error →
@@ -127,5 +191,18 @@ docker compose cp db:/tmp/moviestr.dump ./moviestr.dump
 пустую базу и `pg_restore`, предварительно остановив обслуживающий её API. Production backup/restore и deployment
 не выполнялись. `docker compose down` останавливает локальные контейнеры и сохраняет volume; `down -v` удаляет данные.
 
-Основная ветка Git — `main`; адрес репозитория — `https://github.com/afpias/moviestr-back`.
-CI пока не настроен. Инструкции проекта — в `AGENTS.md`.
+Постоянные ветки — `main` и `dev`; разработка ведётся в `feature/*` и `fix/*` от `dev`.
+[Git workflow](docs/git-workflow.md): checks/PR в dev, annotated уникальные dev-теги на принятых merge commits,
+release обычным merge в main с сохранением ancestry. Только после успешной публикации vSemVer удаляются dev-теги,
+достижимые из exact release commit. Публикация refs выполняется по этому workflow; backend CI пока не настроен.
+Репозиторий: `https://github.com/afpias/moviestr-back`. Инструкции — в `AGENTS.md`.
+
+## Общий результат фильма в мультиплеере
+
+После общего завершения фильма комната переходит в `round-result`: всем участникам виден правильный `result`,
+а `roundResult.outcome` сообщает личное won/lost. Пока другие отвечают, ответ остаётся скрыт.
+«Далее» — POST `/api/v1/rooms/:roomId/ready` со строгим `{roundId}`, cookie и Idempotency-Key.
+Следующий фильм готовится только после всех required ready; после последнего фильма открывается общий рейтинг.
+Произвольного auto-continue timer нет. Explicit leave/30-секундный offline grace снимает участника с текущего барьера;
+поздний reconnect не добавляет его обратно. Result/ready восстанавливаются из PostgreSQL после refresh/restart.
+[Контракт и правила](docs/round-results/spec.md), [plan/tasks](docs/round-results/plan.md).

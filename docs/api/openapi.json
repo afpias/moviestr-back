@@ -1113,6 +1113,76 @@
 				}
 			}
 		},
+		"/api/v1/rooms/{roomId}/ready": {
+			"post": {
+				"operationId": "readyRoom",
+				"summary": "Отметить готовность текущего гостя после общего результата фильма",
+				"security": [{ "guestCookie": [] }],
+				"parameters": [
+					{ "name": "roomId", "in": "path", "required": true, "schema": { "type": "string" } },
+					{
+						"name": "Idempotency-Key",
+						"in": "header",
+						"required": true,
+						"schema": { "type": "string", "minLength": 8, "maxLength": 128 }
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Успешный ответ",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomSnapshot" } } }
+					},
+					"400": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"401": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"403": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"404": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"409": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"413": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"429": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"500": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"502": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"503": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					},
+					"504": {
+						"description": "Безопасная ошибка; code определяет причину",
+						"content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+					}
+				},
+				"requestBody": {
+					"required": true,
+					"content": { "application/json": { "schema": { "$ref": "#/components/schemas/RoomReady" } } }
+				}
+			}
+		},
 		"/api/v1/rooms/{roomId}/leave": {
 			"post": {
 				"operationId": "leaveRoom",
@@ -1830,7 +1900,10 @@
 							"additionalProperties": false
 						}
 					},
-					"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+					"status": {
+						"type": "string",
+						"enum": ["waiting", "loading", "playing", "round-result", "finished", "error", "closed"]
+					},
 					"roundId": {
 						"type": "string",
 						"format": "uuid",
@@ -1879,6 +1952,53 @@
 							{ "type": "null" }
 						]
 					},
+					"roundResult": {
+						"anyOf": [
+							{
+								"type": "object",
+								"properties": {
+									"roundId": {
+										"type": "string",
+										"format": "uuid",
+										"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+									},
+									"roundNumber": { "type": "integer", "minimum": 1, "maximum": 50 },
+									"outcome": { "type": "string", "enum": ["won", "lost"] },
+									"readyPlayerIds": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"format": "uuid",
+											"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+										}
+									},
+									"requiredPlayerIds": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"format": "uuid",
+											"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+										}
+									},
+									"isReady": { "type": "boolean" },
+									"canContinue": { "type": "boolean" },
+									"isLastRound": { "type": "boolean" }
+								},
+								"required": [
+									"roundId",
+									"roundNumber",
+									"outcome",
+									"readyPlayerIds",
+									"requiredPlayerIds",
+									"isReady",
+									"canContinue",
+									"isLastRound"
+								],
+								"additionalProperties": false
+							},
+							{ "type": "null" }
+						]
+					},
 					"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
 					"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
 				},
@@ -1897,8 +2017,51 @@
 					"winnerIds",
 					"error",
 					"result",
+					"roundResult",
 					"version",
 					"serverTime"
+				],
+				"additionalProperties": false
+			},
+			"RoundResult": {
+				"type": "object",
+				"properties": {
+					"roundId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					},
+					"roundNumber": { "type": "integer", "minimum": 1, "maximum": 50 },
+					"outcome": { "type": "string", "enum": ["won", "lost"] },
+					"readyPlayerIds": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid",
+							"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+						}
+					},
+					"requiredPlayerIds": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid",
+							"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+						}
+					},
+					"isReady": { "type": "boolean" },
+					"canContinue": { "type": "boolean" },
+					"isLastRound": { "type": "boolean" }
+				},
+				"required": [
+					"roundId",
+					"roundNumber",
+					"outcome",
+					"readyPlayerIds",
+					"requiredPlayerIds",
+					"isReady",
+					"canContinue",
+					"isLastRound"
 				],
 				"additionalProperties": false
 			},
@@ -1927,7 +2090,7 @@
 					"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
 					"hasPassword": { "type": "boolean" },
 					"view": { "type": "string", "const": "preview" },
-					"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] }
+					"status": { "type": "string", "enum": ["waiting", "loading", "playing", "round-result", "finished", "error", "closed"] }
 				},
 				"required": ["id", "settings", "playerCount", "hasPassword", "view", "status"],
 				"additionalProperties": false
@@ -2137,6 +2300,18 @@
 				"required": ["expectedFrameIndex", "roundId"],
 				"additionalProperties": false
 			},
+			"RoomReady": {
+				"type": "object",
+				"properties": {
+					"roundId": {
+						"type": "string",
+						"format": "uuid",
+						"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+					}
+				},
+				"required": ["roundId"],
+				"additionalProperties": false
+			},
 			"Empty": { "type": "object", "properties": {}, "additionalProperties": false },
 			"TicketRequest": {
 				"type": "object",
@@ -2200,7 +2375,10 @@
 									"additionalProperties": false
 								}
 							},
-							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+							"status": {
+								"type": "string",
+								"enum": ["waiting", "loading", "playing", "round-result", "finished", "error", "closed"]
+							},
 							"roundId": {
 								"type": "string",
 								"format": "uuid",
@@ -2249,6 +2427,53 @@
 									{ "type": "null" }
 								]
 							},
+							"roundResult": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"roundId": {
+												"type": "string",
+												"format": "uuid",
+												"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+											},
+											"roundNumber": { "type": "integer", "minimum": 1, "maximum": 50 },
+											"outcome": { "type": "string", "enum": ["won", "lost"] },
+											"readyPlayerIds": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"format": "uuid",
+													"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+												}
+											},
+											"requiredPlayerIds": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"format": "uuid",
+													"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+												}
+											},
+											"isReady": { "type": "boolean" },
+											"canContinue": { "type": "boolean" },
+											"isLastRound": { "type": "boolean" }
+										},
+										"required": [
+											"roundId",
+											"roundNumber",
+											"outcome",
+											"readyPlayerIds",
+											"requiredPlayerIds",
+											"isReady",
+											"canContinue",
+											"isLastRound"
+										],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
 							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
 							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
 						},
@@ -2267,6 +2492,7 @@
 							"winnerIds",
 							"error",
 							"result",
+							"roundResult",
 							"version",
 							"serverTime"
 						],
@@ -2313,7 +2539,10 @@
 							"playerCount": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
 							"hasPassword": { "type": "boolean" },
 							"view": { "type": "string", "const": "preview" },
-							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] }
+							"status": {
+								"type": "string",
+								"enum": ["waiting", "loading", "playing", "round-result", "finished", "error", "closed"]
+							}
 						},
 						"required": ["id", "settings", "playerCount", "hasPassword", "view", "status"],
 						"additionalProperties": false
@@ -2371,7 +2600,10 @@
 									"additionalProperties": false
 								}
 							},
-							"status": { "type": "string", "enum": ["waiting", "loading", "playing", "finished", "error", "closed"] },
+							"status": {
+								"type": "string",
+								"enum": ["waiting", "loading", "playing", "round-result", "finished", "error", "closed"]
+							},
 							"roundId": {
 								"type": "string",
 								"format": "uuid",
@@ -2420,6 +2652,53 @@
 									{ "type": "null" }
 								]
 							},
+							"roundResult": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"roundId": {
+												"type": "string",
+												"format": "uuid",
+												"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+											},
+											"roundNumber": { "type": "integer", "minimum": 1, "maximum": 50 },
+											"outcome": { "type": "string", "enum": ["won", "lost"] },
+											"readyPlayerIds": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"format": "uuid",
+													"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+												}
+											},
+											"requiredPlayerIds": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"format": "uuid",
+													"pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+												}
+											},
+											"isReady": { "type": "boolean" },
+											"canContinue": { "type": "boolean" },
+											"isLastRound": { "type": "boolean" }
+										},
+										"required": [
+											"roundId",
+											"roundNumber",
+											"outcome",
+											"readyPlayerIds",
+											"requiredPlayerIds",
+											"isReady",
+											"canContinue",
+											"isLastRound"
+										],
+										"additionalProperties": false
+									},
+									{ "type": "null" }
+								]
+							},
 							"version": { "type": "integer", "exclusiveMinimum": 0, "maximum": 9007199254740991 },
 							"serverTime": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
 						},
@@ -2438,6 +2717,7 @@
 							"winnerIds",
 							"error",
 							"result",
+							"roundResult",
 							"version",
 							"serverTime"
 						],

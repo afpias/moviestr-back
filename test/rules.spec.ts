@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { newRoom, join, start, publish, guess, skip, tick, leave } from '../src/rooms/rules'
+import { newRoom, join, start, publish, guess, skip, tick, leave, ready } from '../src/rooms/rules'
 import { roomSnapshot } from '../src/rooms/projections'
 import { soloAction, soloSnapshot } from '../src/solo/rules'
 import type { PreparedMovie, Room, Solo } from '../src/common/model'
@@ -46,6 +46,7 @@ describe('authoritative multiplayer', () => {
 			if (round > 0) publish(r, { ...movie, id: `tmdb-${603 + round}` }, 100 + round)
 			for (const id of ['a', 'b'])
 				for (let frame = 0; frame < 5; frame++) guess(r, id, r.roundId, `tmdb-${9000 + frame}`, frame, 100 + round)
+			for (const id of ['a', 'b']) ready(r, id, r.roundId, 100 + round)
 		}
 		expect(r.status).toBe('finished')
 		expect(r.players.map((p) => p.score)).toEqual([-11500, -11500])
@@ -61,6 +62,8 @@ describe('authoritative multiplayer', () => {
 		start(r, 'b', 30102)
 		publish(r, movie, 30102)
 		tick(r, 120102)
+		ready(r, 'b', r.roundId, 120103)
+		ready(r, 'c', r.roundId, 120103)
 		expect(roomSnapshot(r, 'b', 120103).players).toHaveLength(2)
 		expect(roomSnapshot(r, 'b', 120103).winnerIds.sort()).toEqual(['b', 'c'])
 	})
@@ -92,6 +95,9 @@ describe('authoritative multiplayer', () => {
 		tick(r, 90100)
 		expect(r.players[0]?.score).toBe(750)
 		expect(r.players[1]?.score).toBe(950)
+		expect(r.status).toBe('round-result')
+		ready(r, 'a', r.roundId, 90101)
+		ready(r, 'b', r.roundId, 90101)
 		expect(r.status).toBe('loading')
 		expect(r.roundNumber).toBe(2)
 	})
@@ -99,6 +105,7 @@ describe('authoritative multiplayer', () => {
 		const r = playing()
 		r.settings.filmCount = 1
 		for (const id of ['a', 'b']) for (let i = 0; i < 5; i++) skip(r, id, r.roundId, i, 101)
+		for (const id of ['a', 'b']) ready(r, id, r.roundId, 102)
 		expect(r.status).toBe('finished')
 		const snap = roomSnapshot(r, 'a', 102)
 		expect(snap.winnerIds).toEqual(['a', 'b'])
@@ -115,7 +122,8 @@ describe('authoritative multiplayer', () => {
 		})()
 		expect(error).toBeDefined()
 		expect(r.players[0]?.score).toBe(950)
-		expect(r.roundNumber).toBe(2)
+		expect(r.roundNumber).toBe(1)
+		expect(r.status).toBe('round-result')
 	})
 	it('prevents reused movies and transfers host after grace', () => {
 		const r = playing()
@@ -124,6 +132,7 @@ describe('authoritative multiplayer', () => {
 		tick(r, 30101)
 		expect(r.hostId).toBe('b')
 		tick(r, 90100)
+		ready(r, 'b', r.roundId, 90101)
 		expect(() => publish(r, movie, 90101)).toThrow()
 		expect(r.roundNumber).toBe(2)
 	})

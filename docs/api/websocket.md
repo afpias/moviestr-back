@@ -87,6 +87,7 @@ RoomSnapshot всегда персонален. Пример playing:
 		"winnerIds": [],
 		"error": null,
 		"result": null,
+		"roundResult": null,
 		"version": 4,
 		"serverTime": 1793070000000
 	}
@@ -94,7 +95,7 @@ RoomSnapshot всегда персонален. Пример playing:
 ```
 
 CurrentFrame отсутствует (`null`) вне playing и у уже закончившего фильм игрока. Чужие frame indices, movie choices,
-attemptedMovieIds и правильный ответ не передаются. GameResult появляется только при finished и описывает последний
+attemptedMovieIds и правильный ответ не передаются. GameResult появляется в round-result и finished и описывает текущий/последний
 фильм матча, как в существующем demo. В списке игроков доступны score/status/lastAnswer без выбранного названия.
 
 ## Version, presence и ошибки
@@ -116,3 +117,79 @@ ALREADY_AUTHENTICATED, ROOM_CLOSED, RATE_LIMITED, REALTIME_UNAVAILABLE. Посл
 Прочие сетевые закрытия требуют reconnect с новым ticket и экспоненциальной задержкой на клиенте.
 
 JSON Schema: [`websocket.schema.json`](./websocket.schema.json). Источник: `src/contracts/contracts.ts`.
+
+## Результат фильма и «Далее»
+
+После общего завершения status=round-result, deadline/currentFrame=null, result содержит правильный фильм.
+roundResult содержит roundId, roundNumber, личный outcome won/lost, readyPlayerIds, requiredPlayerIds,
+isReady, canContinue и isLastRound. В остальных фазах roundResult=null. Пока любой участник ещё отвечает,
+result и roundResult остаются null, даже у уже угадавшего игрока.
+
+«Далее» — HTTP POST /api/v1/rooms/:roomId/ready с body `{ "roundId": "..." }`, cookie и Idempotency-Key.
+WS event для команды не добавляется. Обычный room.snapshot обновляет readiness у всех участников.
+После всех ready следующий loading; после последнего фильма finished/rating. Автоперехода через 5 секунд нет.
+Preview не получает result/readiness. Guess/skip в round-result отклоняются без изменения score.
+
+Required roster persisted и может только уменьшаться: explicit leave либо 30 секунд offline снимают участника
+с барьера. Offline внутри grace остаётся required. Поздний reconnect не возвращает исключённого в текущий барьер;
+canContinue=false. Новый roster публикуется с новой version через outbox. Restart сохраняет ready и результат,
+presence получает новый reconnect grace. Точный контракт: [round results](../round-results/spec.md).
+
+Пример персонального результата (сокращённый roster из одного оставшегося участника):
+
+```json
+{
+	"event": "room.snapshot",
+	"data": {
+		"view": "member",
+		"id": "opaque-room-code",
+		"settings": {
+			"name": "Компания",
+			"capacity": 4,
+			"filmCount": 20,
+			"difficulty": "easy",
+			"genre": "all",
+			"mode": "points",
+			"visibility": "public"
+		},
+		"hostId": "11111111-1111-4111-8111-111111111111",
+		"players": [
+			{
+				"id": "11111111-1111-4111-8111-111111111111",
+				"nickname": "Игрок",
+				"score": 1000,
+				"status": "won",
+				"lastAnswer": "correct",
+				"connected": true,
+				"left": false
+			}
+		],
+		"status": "round-result",
+		"roundId": "22222222-2222-4222-8222-222222222222",
+		"roundNumber": 1,
+		"deadline": null,
+		"currentFrame": null,
+		"attemptedMovieIds": [],
+		"winnerIds": [],
+		"error": null,
+		"result": {
+			"title": "Матрица",
+			"originalTitle": "The Matrix",
+			"posterUrl": "https://image.tmdb.org/t/p/w780/example.jpg",
+			"releaseYear": 1999
+		},
+		"roundResult": {
+			"roundId": "22222222-2222-4222-8222-222222222222",
+			"roundNumber": 1,
+			"outcome": "won",
+			"readyPlayerIds": [],
+			"requiredPlayerIds": ["11111111-1111-4111-8111-111111111111"],
+			"isReady": false,
+			"canContinue": true,
+			"isLastRound": false
+		},
+		"version": 4,
+		"serverTime": 1793070000000
+	}
+}
+```

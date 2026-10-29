@@ -62,3 +62,20 @@ Frontend-агенту проверить маршруты `/`, `/lobby`, `/lobby
 
 Источники контрактов: [OpenAPI](./openapi.json), [WS Schema](./websocket.schema.json),
 TypeScript DTO `src/contracts/dto.ts`. Production endpoints/domain scheme задаются после отдельного выбора hosting.
+
+## Контракт round-result / all-ready от 28 октября 2026
+
+Frontend должен поддержать status `round-result`. После общего завершения фильма показывать существующий `result`
+и `roundResult.outcome` (won/lost). До общего завершения result и roundResult=null; собственный ранний won не раскрывает ответ.
+RoomSnapshot.roundResult: `{roundId,roundNumber,outcome,readyPlayerIds,requiredPlayerIds,isReady,canContinue,isLastRound}`.
+В остальных фазах roundResult=null. currentFrame=null и deadline=null в результате.
+
+Кнопка «Далее» вызывает POST `/api/v1/rooms/:roomId/ready` с `{roundId}`, guest cookie и Idempotency-Key.
+Тело не принимает participantId/readyPlayerIds/score. Пока canContinue=false, повторное действие не предлагать.
+Сеть повторяет тот же ключ; новое действие — новый ключ. Cached replay может содержать более старую version:
+игнорировать устаревший snapshot, не откатывать UI. Истина — server snapshot, не локальный counter/timer.
+
+Ждать всех required; сервер переводит на следующий loading или после последнего фильма на finished/rating.
+При reconnect загрузить HTTP snapshot и новый ticket, не обнулять результат/ready. Required roster только сужается
+после explicit leave/30s offline, при этом появляется новая version; поздний reconnect не добавляет игрока обратно
+до следующего фильма. Подробности и ошибки: [spec](../round-results/spec.md), OpenAPI RoomReady и RoundResult.

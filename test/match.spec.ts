@@ -55,6 +55,15 @@ it('finishes two distinct films for four independent guests with tie winners and
 				.set('Idempotency-Key', randomUUID())
 				.send({ roundId: state.roundId, movieId: `tmdb-${603 + round}`, expectedFrameIndex: 0 })
 				.expect(200)
+		const revealed = (await first.agent.get(`/api/v1/rooms/${id}`)).body
+		expect(revealed.status).toBe('round-result')
+		expect(revealed.result.title).toBe(movie.result.title)
+		for (const p of people)
+			await p.agent
+				.post(`/api/v1/rooms/${id}/ready`)
+				.set('Idempotency-Key', randomUUID())
+				.send({ roundId: state.roundId })
+				.expect(200)
 	}
 	const finished = (await first.agent.get(`/api/v1/rooms/${id}`)).body
 	expect(finished.status).toBe('finished')

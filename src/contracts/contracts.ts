@@ -8,6 +8,7 @@ import {
 	skipSchema,
 	roomGuessSchema,
 	roomSkipSchema,
+	roomReadySchema,
 	emptySchema,
 	ticketSchema,
 	difficultySchema,
@@ -58,11 +59,23 @@ const playerSchema = z
 		left: z.boolean()
 	})
 	.strict()
-const roomStatus = z.enum(['waiting', 'loading', 'playing', 'finished', 'error', 'closed'])
+const roomStatus = z.enum(['waiting', 'loading', 'playing', 'round-result', 'finished', 'error', 'closed'])
 const summarySchema = z
 	.object({ id: z.string(), settings: settingsSchema, playerCount: z.number().int().nonnegative(), hasPassword: z.boolean() })
 	.strict()
 const previewSchema = summarySchema.extend({ view: z.literal('preview'), status: roomStatus })
+const roundResultSchema = z
+	.object({
+		roundId: uuid,
+		roundNumber: z.number().int().min(1).max(50),
+		outcome: z.enum(['won', 'lost']),
+		readyPlayerIds: z.array(uuid),
+		requiredPlayerIds: z.array(uuid),
+		isReady: z.boolean(),
+		canContinue: z.boolean(),
+		isLastRound: z.boolean()
+	})
+	.strict()
 export const roomSnapshotSchema = z
 	.object({
 		view: z.literal('member'),
@@ -79,6 +92,7 @@ export const roomSnapshotSchema = z
 		winnerIds: z.array(uuid),
 		error: z.string().nullable(),
 		result: resultSchema.nullable(),
+		roundResult: roundResultSchema.nullable(),
 		version,
 		serverTime: time
 	})
@@ -134,6 +148,7 @@ export const schemas: Record<string, z.ZodType> = {
 	PendingGame: pendingSchema,
 	GuessResponse: guessResponseSchema,
 	RoomSnapshot: roomSnapshotSchema,
+	RoundResult: roundResultSchema,
 	LobbyPreview: previewSchema,
 	LobbySummary: summarySchema,
 	LobbySettings: settingsSchema,
@@ -151,6 +166,7 @@ export const schemas: Record<string, z.ZodType> = {
 	Skip: skipSchema,
 	RoomGuess: roomGuessSchema,
 	RoomSkip: roomSkipSchema,
+	RoomReady: roomReadySchema,
 	Empty: emptySchema,
 	TicketRequest: ticketSchema,
 	CreateRoomResponse: z.object({ roomId: z.string(), snapshot: roomSnapshotSchema }).strict(),
@@ -265,6 +281,10 @@ route('post', '/api/v1/rooms/{roomId}/join', 'joinRoom', ref('RoomSnapshot'), { 
 route('post', '/api/v1/rooms/{roomId}/start', 'startRoom', ref('RoomSnapshot'), { input: 'Empty' })
 route('post', '/api/v1/rooms/{roomId}/guesses', 'guessRoom', ref('RoomSnapshot'), { input: 'RoomGuess' })
 route('post', '/api/v1/rooms/{roomId}/skip', 'skipRoom', ref('RoomSnapshot'), { input: 'RoomSkip' })
+route('post', '/api/v1/rooms/{roomId}/ready', 'readyRoom', ref('RoomSnapshot'), {
+	input: 'RoomReady',
+	summary: 'Отметить готовность текущего гостя после общего результата фильма'
+})
 route('post', '/api/v1/rooms/{roomId}/leave', 'leaveRoom', ref('LeaveResponse'), { input: 'Empty' })
 route('post', '/api/v1/rooms/{roomId}/retry-preparation', 'retryRoom', ref('RoomSnapshot'), { input: 'Empty' })
 route('get', '/health/live', 'liveness', ref('Live'), { public: true })

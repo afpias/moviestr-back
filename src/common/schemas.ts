@@ -21,6 +21,7 @@ export const guessSchema = z.object({ movieId: movieIdSchema, expectedFrameIndex
 export const roomGuessSchema = guessSchema.extend({ roundId: z.uuid() })
 export const skipSchema = guessSchema.omit({ movieId: true })
 export const roomSkipSchema = skipSchema.extend({ roundId: z.uuid() })
+export const roomReadySchema = z.object({ roundId: z.uuid() }).strict()
 export const createGameSchema = z
 	.object({
 		collectionId: z.literal('tmdb-catalog').default('tmdb-catalog'),

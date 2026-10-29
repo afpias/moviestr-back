@@ -141,6 +141,12 @@ describe('final review regressions', () => {
 					.set('Idempotency-Key', randomUUID())
 					.send({ roundId: state.roundId, expectedFrameIndex: i })
 					.expect(200)
+		for (const p of [b, c])
+			await p.agent
+				.post(`/api/v1/rooms/${a.roomId}/ready`)
+				.set('Idempotency-Key', randomUUID())
+				.send({ roundId: state.roundId })
+				.expect(200)
 		const final = (await b.agent.get(`/api/v1/rooms/${a.roomId}`)).body
 		expect(final.players).toHaveLength(2)
 		expect(final.winnerIds.sort()).toEqual([b.id, c.id].sort())

@@ -41,7 +41,7 @@ export interface Player {
 	left: boolean
 	order: number
 }
-export type RoomStatus = 'waiting' | 'loading' | 'playing' | 'finished' | 'error' | 'closed'
+export type RoomStatus = 'waiting' | 'loading' | 'playing' | 'round-result' | 'finished' | 'error' | 'closed'
 export interface Room {
 	id: string
 	settings: Settings
@@ -51,6 +51,8 @@ export interface Room {
 	status: RoomStatus
 	roundId: string
 	roundNumber: number
+	roundReadyPlayerIds: string[]
+	roundRequiredPlayerIds: string[]
 	deadline: number | null
 	movie: PreparedMovie | null
 	usedMovieIds: string[]

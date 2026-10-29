@@ -145,7 +145,12 @@ describe('hard process restart', () => {
 		await command(server.cp, 'expire')
 		await new Promise((r) => setTimeout(r, 1500))
 		const finished = await call(server.base, `/api/v1/rooms/${id}`, undefined, a.cookie)
-		expect(finished.body.status).toBe('finished')
+		expect(finished.body.status).toBe('round-result')
+		for (const p of [a, b])
+			expect((await call(server.base, `/api/v1/rooms/${id}/ready`, { roundId: finished.body.roundId }, p.cookie)).status).toBe(
+				200
+			)
+		expect((await call(server.base, `/api/v1/rooms/${id}`, undefined, a.cookie)).body.status).toBe('finished')
 		expect((finished.body.players as { score: number }[]).map((p) => p.score)).toEqual([950, 950])
 	})
 	afterAll(async () => {
@@ -202,5 +207,46 @@ describe('hard process restart', () => {
 		expect(
 			(await db.query('SELECT count(*)::int AS n FROM event_outbox WHERE aggregate_id=$1 AND NOT delivered', [id])).rows[0]?.n
 		).toBe(0)
+	})
+	it('persists the shared reveal and partial ready after a hard process restart', async () => {
+		let server = await child()
+		const a = await call(server.base, '/api/v1/guest-sessions', {}),
+			b = await call(server.base, '/api/v1/guest-sessions', {})
+		const created = await call(
+			server.base,
+			'/api/v1/rooms',
+			{ nickname: 'Host', settings: { name: 'Persist results', filmCount: 2 } },
+			a.cookie
+		)
+		const id = created.body.roomId as string
+		await call(server.base, `/api/v1/rooms/${id}/join`, { nickname: 'Guest' }, b.cookie)
+		await connect(server, a.cookie!, id)
+		await connect(server, b.cookie!, id)
+		expect((await call(server.base, `/api/v1/rooms/${id}/start`, {}, a.cookie)).status).toBe(200)
+		await command(server.cp, 'prepare')
+		const active = await call(server.base, `/api/v1/rooms/${id}`, undefined, a.cookie),
+			roundId = active.body.roundId
+		for (const p of [a, b])
+			expect(
+				(await call(server.base, `/api/v1/rooms/${id}/guesses`, { roundId, movieId: movie.id, expectedFrameIndex: 0 }, p.cookie))
+					.status
+			).toBe(200)
+		expect((await call(server.base, `/api/v1/rooms/${id}/ready`, { roundId }, a.cookie)).status).toBe(200)
+		const dead = new Promise<void>((resolve) => server.cp.once('exit', () => resolve()))
+		server.cp.kill('SIGKILL')
+		await dead
+		server = await child()
+		const restored = await call(server.base, `/api/v1/rooms/${id}`, undefined, a.cookie)
+		expect(restored.body.status).toBe('round-result')
+		expect(restored.body.roundId).toBe(roundId)
+		expect(restored.body.result).toEqual(movie.result)
+		expect((restored.body.roundResult as { readyPlayerIds: string[] }).readyPlayerIds).toEqual([a.body.participantId])
+		expect((restored.body.players as { score: number }[]).map((p) => p.score)).toEqual([1100, 1100])
+		await connect(server, a.cookie!, id)
+		await connect(server, b.cookie!, id)
+		expect((await call(server.base, `/api/v1/rooms/${id}/ready`, { roundId }, b.cookie)).body.status).toBe('loading')
+		const next = await call(server.base, `/api/v1/rooms/${id}`, undefined, a.cookie)
+		expect(next.body.roundNumber).toBe(2)
+		expect(next.body.roundId).not.toBe(roundId)
 	})
 })

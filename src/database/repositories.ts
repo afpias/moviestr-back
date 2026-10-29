@@ -36,7 +36,14 @@ export class Repositories {
 		const used = (await c.query<{ movie_id: string }>('SELECT movie_id FROM room_used_movies WHERE room_id=$1', [id])).rows.map(
 			(r) => r.movie_id
 		)
-		return { ...row.data, players, movie: round?.data ?? null, usedMovieIds: used }
+		return {
+			...row.data,
+			roundReadyPlayerIds: row.data.roundReadyPlayerIds ?? [],
+			roundRequiredPlayerIds: row.data.roundRequiredPlayerIds ?? [],
+			players,
+			movie: round?.data ?? null,
+			usedMovieIds: used
+		}
 	}
 	async saveRoom(c: PoolClient, r: Room, emit = true) {
 		const { players, movie, usedMovieIds, ...data } = r

@@ -26,7 +26,8 @@
 | `src/shared/stores/game.store.ts`, `multiplayer.store.ts`                                               | клиентское состояние и координация                                | оставить на фронте, адаптировать к HTTP/WS                         |
 
 Сейчас `/api/v1/games` и `/api/v1/rooms` **не существуют**: функции вызываются локально. Пути ниже — проект нового API.
-Frontend находится в `C:/Users/nikip/Documents/Projects/moviestr-front`; backend — текущий `moviestr-back`.
+Frontend находится в соседнем `../moviestr-front`; backend — текущий `moviestr-back`.
+После переноса рабочий корень: `C:/Users/nikip/Documents/Projects/moviestr`.
 Документация фронта скопирована в `docs/`, каталога `reference/frontend-docs` сейчас нет.
 
 ## 2. Глобальные ограничения

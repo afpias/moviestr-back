@@ -69,7 +69,7 @@ Same-origin reverse proxy и production origins остаются проектн�
 
 ## Состояния и приёмка
 
-Комната: `waiting -> loading -> playing -> loading -> ... -> finished`; `loading -> error -> loading`; закрытие — `closed`.
+Комната: `waiting -> loading -> playing -> round-result -> loading -> ... -> round-result -> finished`; `loading -> error -> loading`; закрытие — `closed`.
 Игрок: `playing / won / lost`, отдельно connected/left. Соло: текущие `GameResponse` и состояния store.
 
 - **AC-01:** два отдельных устройства создают/открывают комнату; видят один фильм, личные кадры и общий рейтинг.
@@ -85,3 +85,10 @@ Same-origin reverse proxy и production origins остаются проектн�
 Приняты 30 дней гостевой сессии с продлением активности и 7 дней завершённых игр/комнат и неактивного соло, Yarn Classic.
 Backend создаётся в текущем `moviestr-back`; hosting и production origin/domain схема отложены.
 Не заказывать сервисы и не менять production без отдельного запроса.
+
+
+## Дополнение владельца: общий результат и ready, 2026-10-28
+
+После каждого фильма обязателен persisted round-result и персональный исход. Следующий фильм и финальный рейтинг
+только после ready всех требуемых участников. Никакого произвольного auto-continue timer.
+Точный контракт, 30-секундный grace и совместимость: [round results](../round-results/spec.md).

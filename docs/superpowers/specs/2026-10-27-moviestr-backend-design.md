@@ -221,3 +221,8 @@ Relational entities содержат JSONB domain payloads; FK, unique nickname/
 Ревьюер не нашёл дополнительных важных пробелов в скрытии ответа, lock order и расширениях DTO. Три уточнения
 исполнителя внесены выше: room-scoped presence, освобождение waiting membership после grace и неизменяемый lifecycle
 preparation operations/dedup replay. Они явно фиксируются здесь до реализации.
+
+## Дополнение 2026-10-28: persisted round results
+
+Немедленный переход фильма заменяется общей фазой round-result с личным outcome и persisted all-ready barrier.
+Точный новый контракт и правила grace/restart: [spec](../../round-results/spec.md).
